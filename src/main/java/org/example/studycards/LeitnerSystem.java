@@ -41,28 +41,40 @@ public class LeitnerSystem extends StudyMethod{
         return boxes;
     }
 
-    public String getRandomCard(List<Box> otherBoxes){
-        if(otherBoxes == null){
+    public String getRandomCard(List<Box> otherBoxes) {
+        if (isInvalidBoxList(otherBoxes)) {
             return null;
         }
-        if(otherBoxes.isEmpty()){
-            return null;
-        }
-        Box allBoxes = new Box();
-        for(Box box : otherBoxes){
-            allBoxes.addCards(box.getCards());
-        }
-        Integer randomCard = allBoxes.getRandomCard();
-        if(randomCard == null){
+
+        Box allBoxes = mergeBoxes(otherBoxes);
+        Integer randomCardId = allBoxes.getRandomCard();
+
+        if (randomCardId == null) {
             return "No card found";
         }
-        CardManager manager = CardManager.getCardManager();
-        Card card = manager.getCard(randomCard);
-        String response = "["+ randomCard + "] ";
-        response += "The random question was: " + card.getQuestion() + " | ";
-        response += "The answer is: " + card.getAnswer();
-        return  response;
+
+        return buildCardResponse(randomCardId);
     }
+
+    private boolean isInvalidBoxList(List<Box> boxes) {
+        return boxes == null || boxes.isEmpty();
+    }
+
+    private Box mergeBoxes(List<Box> boxes) {
+        Box combinedBox = new Box();
+        for (Box box : boxes) {
+            combinedBox.addCards(box.getCards());
+        }
+        return combinedBox;
+    }
+
+    private String buildCardResponse(Integer cardId) {
+        CardManager manager = CardManager.getCardManager();
+        Card card = manager.getCard(cardId);
+        return "[" + cardId + "] The random question was: " + card.getQuestion() +
+                " | The answer is: " + card.getAnswer();
+    }
+
 
     public void addCardToBox(Integer id, Integer boxId) {
         this.boxes.get(boxId).addCard(id);

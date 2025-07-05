@@ -29,29 +29,33 @@ public class TodoTracker {
     public String toString() {
         StringBuilder str = new StringBuilder();
         for (ToDo toDo : toDos) {
-            String todoInfo = toDo.toString();
-            str.append(todoInfo);
-            str.append("\n");
-            Integer id = toDo.getId();
-            List<LocalDateTime> todosDate = this.tracker.get(id);
-            if(todosDate == null){
-                str.append("No tracks found\n");
-            }else{
-                for (LocalDateTime ldt : todosDate) {
-                    String pattern = "yyyy-MM-dd HH:mm:ss";
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-                    String formattedDate = formatter.format(ldt);
-                    str.append(formattedDate);
-                    str.append("\n");
-                }
-            }
+            appendToDoInfo(str, toDo);
         }
         String response = str.toString();
-        if(response.isEmpty()){
-            return "No ToDos found";
-        }
-        return response;
+        return response.isEmpty() ? "No ToDos found" : response;
     }
+
+    private void appendToDoInfo(StringBuilder str, ToDo toDo) {
+        str.append(toDo.toString()).append("\n");
+        appendTrackedDates(str, toDo.getId());
+    }
+
+    private void appendTrackedDates(StringBuilder str, Integer id) {
+        List<LocalDateTime> todosDate = this.tracker.get(id);
+        if (todosDate == null) {
+            str.append("No tracks found\n");
+        } else {
+            for (LocalDateTime ldt : todosDate) {
+                str.append(formatDate(ldt)).append("\n");
+            }
+        }
+    }
+
+    private String formatDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(dateTime);
+    }
+
 
     public void addToDoExecutionTime(Integer id){
         List<LocalDateTime> et = tracker.computeIfAbsent(id, k -> new ArrayList<>());

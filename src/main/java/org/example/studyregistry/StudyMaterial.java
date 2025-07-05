@@ -58,29 +58,44 @@ public class StudyMaterial{
         return response;
     }
 
-    public Map<String, Integer> getReferenceCountMap(){
-        Map<String, Integer> response = new HashMap<>();
-        response.put("Audio References", 0);
-        response.put("Video References", 0);
-        response.put("Text References", 0);
-        for (Reference reference : references) {
-            if (reference.getClass() == AudioReference.class) {
-                Integer audioCount = response.get("Audio References");
-                response.put("Audio References", audioCount + 1);
-            } else if (reference.getClass() == VideoReference.class) {
-                if(((VideoReference) reference).handleStreamAvailability()){
-                    Integer videoCount = response.get("Video References");
-                    response.put("Video References", videoCount + 1);
-                }
-            } else if (reference.getClass() == TextReference.class){
-                if(((TextReference) reference).handleTextAccess()){
-                    Integer textCount = response.get("Text References");
-                    response.put("Text References", textCount + 1);
-                }
-            }
-        }
+    public Map<String, Integer> getReferenceCountMap() {
+        Map<String, Integer> response = initializeReferenceCountMap();
+        processReferences(response);
         setReferenceCount(response);
         return response;
     }
+
+    private Map<String, Integer> initializeReferenceCountMap() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("Audio References", 0);
+        map.put("Video References", 0);
+        map.put("Text References", 0);
+        return map;
+    }
+
+    private void processReferences(Map<String, Integer> map) {
+        for (Reference reference : references) {
+            processSingleReference(reference, map);
+        }
+    }
+
+    private void processSingleReference(Reference reference, Map<String, Integer> map) {
+        if (reference instanceof AudioReference) {
+            incrementCount(map, "Audio References");
+        } else if (reference instanceof VideoReference videoRef) {
+            if (videoRef.handleStreamAvailability()) {
+                incrementCount(map, "Video References");
+            }
+        } else if (reference instanceof TextReference textRef) {
+            if (textRef.handleTextAccess()) {
+                incrementCount(map, "Text References");
+            }
+        }
+    }
+
+    private void incrementCount(Map<String, Integer> map, String key) {
+        map.put(key, map.get(key) + 1);
+    }
+
 
 }

@@ -54,10 +54,10 @@ public class HabitTracker {
         return this.tracker.keySet().stream().toList();
     }
 
-    public int addHabit(String name, String motivation, Integer dailyMinutesDedication, Integer dailyHoursDedication, Integer year, Integer month, Integer day, Integer hour, Integer minute, Integer seconds, Boolean isConcluded) {
-        LocalTime lt = LocalTime.of(dailyHoursDedication, dailyMinutesDedication);
-        LocalDateTime startDate = LocalDateTime.of(year, month, day, hour, minute, seconds);
-        Habit habit = new Habit(name, motivation, lt, this.nextId, startDate, isConcluded);
+    public int addHabit(HabitCreationData habitCreationData) {
+        LocalTime lt = LocalTime.of(habitCreationData.dailyHoursDedication(), habitCreationData.dailyMinutesDedication());
+        LocalDateTime startDate = LocalDateTime.of(habitCreationData.year(), habitCreationData.month(), habitCreationData.day(), habitCreationData.hour(), habitCreationData.minute(), habitCreationData.seconds());
+        Habit habit = new Habit(habitCreationData.name(), habitCreationData.motivation(), lt, this.nextId, startDate, habitCreationData.isConcluded());
         this.habits.add(habit);
         int response = nextId;
         this.tracker.put(nextId, new ArrayList<>());
@@ -66,7 +66,7 @@ public class HabitTracker {
     }
 
     public int handleAddHabitAdapter(List<String> stringProperties, List<Integer> intProperties, boolean isConcluded){
-        return addHabit(stringProperties.get(0), stringProperties.get(1), intProperties.get(0), intProperties.get(1), intProperties.get(2), intProperties.get(3), intProperties.get(4), intProperties.get(5), intProperties.get(6), intProperties.get(7), isConcluded);
+        return addHabit(new HabitCreationData(stringProperties.get(0), stringProperties.get(1), intProperties.get(0), intProperties.get(1), intProperties.get(2), intProperties.get(3), intProperties.get(4), intProperties.get(5), intProperties.get(6), intProperties.get(7), isConcluded));
     }
 
 
@@ -110,5 +110,21 @@ public class HabitTracker {
         }
         return habits;
     }
+
+    public String getFormattedHabitTimeline() {
+        StringBuilder response = new StringBuilder();
+        for (Habit habit : getHabits()) {
+            response.append("[ Habit: ")
+                    .append(habit.getName())
+                    .append(". Records: ");
+            List<LocalDateTime> records = getHabitRecords(habit.getId());
+            for (LocalDateTime record : records) {
+                response.append(formatHabitDate(record)).append(", ");
+            }
+            response.append("]");
+        }
+        return response.toString();
+    }
+
 
 }

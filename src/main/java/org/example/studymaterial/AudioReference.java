@@ -44,16 +44,14 @@ public class AudioReference extends Reference {
 
      private void editVideoAttributes(int rating, String language, int viewCount, int shareCount,boolean isDownloadable){
          this.setRating(rating);
-         this.setShareCount(shareCount);
-         this.setViewCount(viewCount);
+         this.registerShare(shareCount);
+         this.registerView(viewCount);
          this.setDownloadable(isDownloadable);
          this.setLanguage(language);
      }
 
      public void editBasic(String title, String description, String link){
-         this.setTitle(title);
-         this.setDescription(description);
-         this.setLink(link);
+         this.updateMetadata(title, description, link);
      }
 
 }

@@ -55,9 +55,9 @@ public class HabitTracker {
     }
 
     public int addHabit(HabitCreationData habitCreationData) {
-        LocalTime lt = LocalTime.of(habitCreationData.getDailyHoursDedication(), habitCreationData.getDailyMinutesDedication());
-        LocalDateTime startDate = LocalDateTime.of(habitCreationData.getYear(), habitCreationData.getMonth(), habitCreationData.getDay(), habitCreationData.getHour(), habitCreationData.getMinute(), habitCreationData.getSeconds());
-        Habit habit = new Habit(habitCreationData.getName(), habitCreationData.getMotivation(), lt, this.nextId, startDate, habitCreationData.getIsConcluded());
+        LocalTime lt = LocalTime.of(habitCreationData.dailyHoursDedication(), habitCreationData.dailyMinutesDedication());
+        LocalDateTime startDate = LocalDateTime.of(habitCreationData.year(), habitCreationData.month(), habitCreationData.day(), habitCreationData.hour(), habitCreationData.minute(), habitCreationData.seconds());
+        Habit habit = new Habit(habitCreationData.name(), habitCreationData.motivation(), lt, this.nextId, startDate, habitCreationData.isConcluded());
         this.habits.add(habit);
         int response = nextId;
         this.tracker.put(nextId, new ArrayList<>());
